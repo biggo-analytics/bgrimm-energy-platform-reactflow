@@ -24,9 +24,6 @@ const edgeTypes = {
   animated: AnimatedEdge,
 };
 
-const onInit = (reactFlowInstance) =>
-  console.log("flow loaded:", reactFlowInstance);
-
 const nodeTypes = { imageNode: ImageNode };
 
 const OverviewFlow = () => {
@@ -36,8 +33,15 @@ const OverviewFlow = () => {
   const [modalData, setModalData] = useState({ id: null, label: "", imageUrl: "" });
   const [edgeModalOpen, setEdgeModalOpen] = useState(false);
   const [edgeModalData, setEdgeModalData] = useState({ id: null, label: "" });
+  const [reactFlowInstance, setReactFlowInstance] = useState(null);
+
+  const onInit = useCallback((instance) => {
+    setReactFlowInstance(instance);
+    console.log("flow loaded:", instance);
+  }, []);
   const onConnect = useCallback(
-    (params) => setEdges((eds) => addEdge(params, eds)),
+    (params) =>
+      setEdges((eds) => addEdge({ ...params, type: "animated" }, eds)),
     [setEdges]
   );
 
@@ -55,6 +59,50 @@ const OverviewFlow = () => {
     setEdgeModalData({ id: edge.id, label: edge.label || "" });
     setEdgeModalOpen(true);
   }, []);
+
+  const onNodesDelete = useCallback(
+    (deleted) => {
+      setEdges((eds) =>
+        eds.filter((e) => !deleted.some((n) => e.source === n.id || e.target === n.id))
+      );
+    },
+    [setEdges]
+  );
+
+  const onEdgesDelete = useCallback(
+    (deleted) => {
+      setEdges((eds) => eds.filter((e) => !deleted.some((de) => de.id === e.id)));
+    },
+    [setEdges]
+  );
+
+  const exportConfig = () => {
+    const dataStr = JSON.stringify({ nodes, edges }, null, 2);
+    const blob = new Blob([dataStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "config.json";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const exportFlow = () => {
+    if (!reactFlowInstance) return;
+    const flow = reactFlowInstance.toObject();
+    const dataStr = JSON.stringify(flow, null, 2);
+    const blob = new Blob([dataStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "flow.json";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
 
   const handleSave = (data) => {
     if (data.id) {
@@ -109,11 +157,25 @@ const OverviewFlow = () => {
       >
         Add Node
       </button>
+      <button
+        style={{ position: "absolute", zIndex: 4, right: 10, top: 50 }}
+        onClick={exportConfig}
+      >
+        Export Config
+      </button>
+      <button
+        style={{ position: "absolute", zIndex: 4, right: 10, top: 90 }}
+        onClick={exportFlow}
+      >
+        Export Flow
+      </button>
       <ReactFlow
         nodes={nodes}
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
+        onNodesDelete={onNodesDelete}
+        onEdgesDelete={onEdgesDelete}
         onConnect={onConnect}
         onNodeDoubleClick={onNodeDoubleClick}
         onEdgeDoubleClick={onEdgeDoubleClick}
