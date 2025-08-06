@@ -1,0 +1,23 @@
+.image-node {
+  /* ลบ/แก้ไขส่วนเหล่านี้เพื่อเอากรอบออก */
+  background: transparent; /* ทำให้พื้นหลังโปร่งใส */
+  border: none; /* เอาเส้นขอบออก */
+  padding: 0; /* เอาช่องว่างภายในออก */
+  box-shadow: none; /* เอาเงาออก */
+
+  /* คงคุณสมบัติเดิมไว้ */
+  text-align: center;
+  width: 150px;
+}
+
+.node-image {
+  width: 50px;
+  height: 50px;
+  margin-bottom: 8px;
+}
+
+.node-label {
+  font-family: sans-serif;
+  font-size: 12px;
+  color: #333;
+}
