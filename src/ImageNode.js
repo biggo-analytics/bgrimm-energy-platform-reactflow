@@ -3,7 +3,6 @@ import { Handle, Position } from "reactflow";
 
 import "./ImageNode.css";
 
-// ใช้ memo เพื่อป้องกันการ re-render ที่ไม่จำเป็น
 export default memo(({ data, isConnectable }) => {
   return (
     <>
