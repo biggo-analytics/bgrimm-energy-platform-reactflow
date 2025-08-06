@@ -37,7 +37,8 @@ const OverviewFlow = () => {
   const [edgeModalOpen, setEdgeModalOpen] = useState(false);
   const [edgeModalData, setEdgeModalData] = useState({ id: null, label: "" });
   const onConnect = useCallback(
-    (params) => setEdges((eds) => addEdge(params, eds)),
+    (params) =>
+      setEdges((eds) => addEdge({ ...params, type: "animated" }, eds)),
     [setEdges]
   );
 
