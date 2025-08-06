@@ -57,6 +57,7 @@ export const edges = [
     target: "load",
     //markerEnd: { type: MarkerType.ArrowClosed },
     type: "animated",
+    label: "Solar to Load",
   },
   {
     id: "solar-to-battery",
@@ -64,6 +65,7 @@ export const edges = [
     target: "battery",
     //markerEnd: { type: MarkerType.ArrowClosed },
     type: "animated",
+    label: "Solar to Battery",
   },
   {
     id: "grid-to-load",
@@ -71,5 +73,6 @@ export const edges = [
     target: "load",
     //markerEnd: { type: MarkerType.ArrowClosed },
     type: "animated",
+    label: "Grid to Load",
   },
 ];

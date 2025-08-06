@@ -6,6 +6,7 @@ import ReactFlow, {
   Background,
   useNodesState,
   useEdgesState,
+  updateEdge,
 } from "reactflow";
 import "reactflow/dist/style.css";
 
@@ -17,6 +18,7 @@ import {
 import ImageNode from "./ImageNode";
 import AnimatedEdge from "./AnimatedEdge";
 import NodeModal from "./NodeModal";
+import EdgeModal from "./EdgeModal";
 
 const edgeTypes = {
   animated: AnimatedEdge,
@@ -32,6 +34,8 @@ const OverviewFlow = () => {
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalData, setModalData] = useState({ id: null, label: "", imageUrl: "" });
+  const [edgeModalOpen, setEdgeModalOpen] = useState(false);
+  const [edgeModalData, setEdgeModalData] = useState({ id: null, label: "" });
   const onConnect = useCallback(
     (params) => setEdges((eds) => addEdge(params, eds)),
     [setEdges]
@@ -45,6 +49,11 @@ const OverviewFlow = () => {
   const onNodeDoubleClick = useCallback((event, node) => {
     setModalData({ id: node.id, label: node.data.label, imageUrl: node.data.imageUrl });
     setModalOpen(true);
+  }, []);
+
+  const onEdgeDoubleClick = useCallback((event, edge) => {
+    setEdgeModalData({ id: edge.id, label: edge.label || "" });
+    setEdgeModalOpen(true);
   }, []);
 
   const handleSave = (data) => {
@@ -76,6 +85,22 @@ const OverviewFlow = () => {
     setModalOpen(false);
   };
 
+  const handleEdgeSave = (data) => {
+    setEdges((eds) => eds.map((e) => (e.id === data.id ? { ...e, label: data.label } : e)));
+    setEdgeModalOpen(false);
+  };
+
+  const handleEdgeDelete = (id) => {
+    setEdges((eds) => eds.filter((e) => e.id !== id));
+    setEdgeModalOpen(false);
+  };
+
+  const onEdgeUpdate = useCallback(
+    (oldEdge, newConnection) =>
+      setEdges((els) => updateEdge(oldEdge, newConnection, els)),
+    [setEdges]
+  );
+
   return (
     <>
       <button
@@ -91,8 +116,11 @@ const OverviewFlow = () => {
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         onNodeDoubleClick={onNodeDoubleClick}
+        onEdgeDoubleClick={onEdgeDoubleClick}
+        onEdgeUpdate={onEdgeUpdate}
         onInit={onInit}
         fitView
+        edgesUpdatable
         attributionPosition="top-right"
         nodeTypes={nodeTypes}
         // 3. ส่ง edgeTypes เป็น prop
@@ -125,6 +153,14 @@ const OverviewFlow = () => {
         onSave={handleSave}
         onDelete={handleDelete}
         onClose={() => setModalOpen(false)}
+      />
+      <EdgeModal
+        isOpen={edgeModalOpen}
+        data={edgeModalData}
+        onChange={setEdgeModalData}
+        onSave={handleEdgeSave}
+        onDelete={handleEdgeDelete}
+        onClose={() => setEdgeModalOpen(false)}
       />
     </>
   );
