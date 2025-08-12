@@ -7,30 +7,52 @@ import "./ImageNode.css";
 export default memo(({ data, isConnectable }) => {
   return (
     <>
-      {/* Handle สำหรับรับเส้นเชื่อมเข้ามา */}
+      {/* Handle สำหรับรับเส้นเชื่อมเข้ามา (ด้านซ้าย) */}
       <Handle
         id="target"
         type="target"
-        position={Position.Top}
+        position={Position.Left}
         isConnectable={isConnectable}
+        style={{
+          background: '#007bff',
+          border: '2px solid #fff',
+          width: '8px',
+          height: '8px',
+          borderRadius: '50%',
+          cursor: 'crosshair',
+        }}
       />
 
       <div className="image-node">
-        {data.imageUrl && (
-          <img src={data.imageUrl} alt={data.label} className="node-image" />
-        )}
-        <div className="node-label">
-          <strong>{data.value}</strong>
+        <div className="node-content">
+          <div className="node-icon">
+            {data.imageUrl && (
+              <img src={data.imageUrl} alt={data.label} className="node-image" />
+            )}
+          </div>
+          <div className="node-text">
+            <div className="node-value">
+              <strong>{data.value}</strong>
+            </div>
+            <div className="node-label">{data.label}</div>
+          </div>
         </div>
-        <div className="node-label">{data.label}</div>
       </div>
 
-      {/* Handle สำหรับลากเส้นเชื่อมออกไป */}
+      {/* Handle สำหรับลากเส้นเชื่อมออกไป (ด้านขวา) */}
       <Handle
         id="source"
         type="source"
-        position={Position.Bottom}
+        position={Position.Right}
         isConnectable={isConnectable}
+        style={{
+          background: '#007bff',
+          border: '2px solid #fff',
+          width: '8px',
+          height: '8px',
+          borderRadius: '50%',
+          cursor: 'crosshair',
+        }}
       />
     </>
   );

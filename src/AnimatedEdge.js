@@ -1,5 +1,5 @@
 import React from "react";
-import { getSmoothStepPath } from "reactflow";
+import { getBezierPath, MarkerType } from "reactflow";
 
 export default function AnimatedEdge({
   id,
@@ -11,8 +11,8 @@ export default function AnimatedEdge({
   targetPosition,
   markerEnd,
 }) {
-  // คำนวณ path ของเส้นเชื่อม
-  const [edgePath] = getSmoothStepPath({
+  // คำนวณ path ของเส้นเชื่อมแบบ Bezier curve
+  const [edgePath] = getBezierPath({
     sourceX,
     sourceY,
     sourcePosition,
@@ -29,7 +29,7 @@ export default function AnimatedEdge({
         style={{ stroke: "#ddd", strokeWidth: 3 }}
         className="react-flow__edge-path"
         d={edgePath}
-        markerEnd={markerEnd}
+        markerEnd={markerEnd || { type: MarkerType.ArrowClosed }}
       />
       {/* วงกลมที่จะเคลื่อนที่ */}
       <circle r="6" fill="#f81ce5">
