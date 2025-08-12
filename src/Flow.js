@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useRef } from "react";
 import ReactFlow, {
   addEdge,
   MiniMap,
@@ -7,6 +7,7 @@ import ReactFlow, {
   useNodesState,
   useEdgesState,
   updateEdge,
+  ReactFlowProvider,
 } from "reactflow";
 import "reactflow/dist/style.css";
 
@@ -19,6 +20,7 @@ import ImageNode from "./ImageNode";
 import AnimatedEdge from "./AnimatedEdge";
 import NodeModal from "./NodeModal";
 import EdgeModal from "./EdgeModal";
+import Sidebar from "./Sidebar";
 
 const edgeTypes = {
   animated: AnimatedEdge,
@@ -36,16 +38,19 @@ const OverviewFlow = () => {
   const [modalData, setModalData] = useState({ id: null, label: "", imageUrl: "" });
   const [edgeModalOpen, setEdgeModalOpen] = useState(false);
   const [edgeModalData, setEdgeModalData] = useState({ id: null, label: "" });
+  const reactFlowWrapper = useRef(null);
+  const reactFlowInstance = useRef(null);
   const onConnect = useCallback(
-    (params) =>
-      setEdges((eds) => addEdge({ ...params, type: "animated" }, eds)),
+    (params) => {
+      console.log("Connection attempt:", params);
+      const newEdge = addEdge({ ...params, type: "animated" }, []);
+      console.log("New edge created:", newEdge);
+      setEdges((eds) => addEdge({ ...params, type: "animated" }, eds));
+    },
     [setEdges]
   );
 
-  const openAddModal = () => {
-    setModalData({ id: null, label: "", imageUrl: "" });
-    setModalOpen(true);
-  };
+
 
   const onNodeDoubleClick = useCallback((event, node) => {
     setModalData({ id: node.id, label: node.data.label, imageUrl: node.data.imageUrl });
@@ -73,18 +78,7 @@ const OverviewFlow = () => {
     [setEdges]
   );
 
-  const exportConfig = () => {
-    const dataStr = JSON.stringify({ nodes, edges }, null, 2);
-    const blob = new Blob([dataStr], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "config.json";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  };
+
 
   const handleSave = (data) => {
     if (data.id) {
@@ -131,39 +125,78 @@ const OverviewFlow = () => {
     [setEdges]
   );
 
+  const onDragOver = useCallback((event) => {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "move";
+  }, []);
+
+  const onDrop = useCallback(
+    (event) => {
+      event.preventDefault();
+
+      const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
+      const data = event.dataTransfer.getData("application/reactflow");
+
+      if (typeof data === "undefined" || !data) {
+        return;
+      }
+
+      const nodeData = JSON.parse(data);
+      const position = reactFlowInstance.current.project({
+        x: event.clientX - reactFlowBounds.left,
+        y: event.clientY - reactFlowBounds.top,
+      });
+
+      const newNode = {
+        id: `${nodeData.type}-${Date.now()}`,
+        type: "imageNode",
+        position,
+        data: {
+          label: nodeData.label,
+          value: nodeData.value,
+          imageUrl: nodeData.icon,
+        },
+      };
+
+      setNodes((nds) => nds.concat(newNode));
+    },
+    [setNodes]
+  );
+
+  const onInitFlow = useCallback((instance) => {
+    reactFlowInstance.current = instance;
+    onInit(instance);
+  }, []);
+
   return (
-    <>
-      <button
-        style={{ position: "absolute", zIndex: 4, right: 10, top: 10 }}
-        onClick={openAddModal}
+    <div className="flow-container">
+      <Sidebar />
+      <div 
+        className="reactflow-wrapper" 
+        ref={reactFlowWrapper}
+        style={{ marginLeft: "250px", height: "100vh" }}
       >
-        Add Node
-      </button>
-      <button
-        style={{ position: "absolute", zIndex: 4, right: 10, top: 50 }}
-        onClick={exportConfig}
-      >
-        Export Config
-      </button>
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onNodesDelete={onNodesDelete}
-        onEdgesDelete={onEdgesDelete}
-        onConnect={onConnect}
-        onNodeDoubleClick={onNodeDoubleClick}
-        onEdgeDoubleClick={onEdgeDoubleClick}
-        onEdgeUpdate={onEdgeUpdate}
-        onInit={onInit}
-        fitView
-        edgesUpdatable
-        attributionPosition="top-right"
-        nodeTypes={nodeTypes}
-        // 3. ส่ง edgeTypes เป็น prop
-        edgeTypes={edgeTypes}
-      >
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onNodesDelete={onNodesDelete}
+          onEdgesDelete={onEdgesDelete}
+          onConnect={onConnect}
+          onNodeDoubleClick={onNodeDoubleClick}
+          onEdgeDoubleClick={onEdgeDoubleClick}
+          onEdgeUpdate={onEdgeUpdate}
+          onInit={onInitFlow}
+          onDrop={onDrop}
+          onDragOver={onDragOver}
+          fitView
+          edgesUpdatable
+          connectable={true}
+          attributionPosition="top-right"
+          nodeTypes={nodeTypes}
+          edgeTypes={edgeTypes}
+        >
         {/* SVG defs เดิม ไม่ต้องแก้ไข */}
         <svg>
           <defs>
@@ -180,28 +213,35 @@ const OverviewFlow = () => {
           </defs>
         </svg>
 
-        <MiniMap />
-        <Controls />
-        <Background color="#aaa" gap={16} />
-      </ReactFlow>
-      <NodeModal
-        isOpen={modalOpen}
-        data={modalData}
-        onChange={setModalData}
-        onSave={handleSave}
-        onDelete={handleDelete}
-        onClose={() => setModalOpen(false)}
-      />
-      <EdgeModal
-        isOpen={edgeModalOpen}
-        data={edgeModalData}
-        onChange={setEdgeModalData}
-        onSave={handleEdgeSave}
-        onDelete={handleEdgeDelete}
-        onClose={() => setEdgeModalOpen(false)}
-      />
-    </>
+          <MiniMap />
+          <Controls />
+          <Background color="#aaa" gap={16} />
+        </ReactFlow>
+        <NodeModal
+          isOpen={modalOpen}
+          data={modalData}
+          onChange={setModalData}
+          onSave={handleSave}
+          onDelete={handleDelete}
+          onClose={() => setModalOpen(false)}
+        />
+        <EdgeModal
+          isOpen={edgeModalOpen}
+          data={edgeModalData}
+          onChange={setEdgeModalData}
+          onSave={handleEdgeSave}
+          onDelete={handleEdgeDelete}
+          onClose={() => setEdgeModalOpen(false)}
+        />
+      </div>
+    </div>
   );
 };
 
-export default OverviewFlow;
+const FlowWithProvider = () => (
+  <ReactFlowProvider>
+    <OverviewFlow />
+  </ReactFlowProvider>
+);
+
+export default FlowWithProvider;

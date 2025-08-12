@@ -9,6 +9,7 @@ export default memo(({ data, isConnectable }) => {
     <>
       {/* Handle สำหรับรับเส้นเชื่อมเข้ามา */}
       <Handle
+        id="target"
         type="target"
         position={Position.Top}
         isConnectable={isConnectable}
@@ -26,6 +27,7 @@ export default memo(({ data, isConnectable }) => {
 
       {/* Handle สำหรับลากเส้นเชื่อมออกไป */}
       <Handle
+        id="source"
         type="source"
         position={Position.Bottom}
         isConnectable={isConnectable}
