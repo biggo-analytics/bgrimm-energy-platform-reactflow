@@ -21,6 +21,7 @@ import AnimatedEdge from "./AnimatedEdge";
 import NodeModal from "./NodeModal";
 import EdgeModal from "./EdgeModal";
 import Sidebar from "./Sidebar";
+import SettingsPanel from "./SettingsPanel";
 
 const edgeTypes = {
   animated: AnimatedEdge,
@@ -38,6 +39,7 @@ const OverviewFlow = () => {
   const [modalData, setModalData] = useState({ id: null, label: "", imageUrl: "" });
   const [edgeModalOpen, setEdgeModalOpen] = useState(false);
   const [edgeModalData, setEdgeModalData] = useState({ id: null, label: "" });
+  const [selectedNode, setSelectedNode] = useState(null);
   const reactFlowWrapper = useRef(null);
   const reactFlowInstance = useRef(null);
   const onConnect = useCallback(
@@ -49,6 +51,27 @@ const OverviewFlow = () => {
     },
     [setEdges]
   );
+
+  // Custom nodes change handler to track selected node
+  const handleNodesChange = useCallback((changes) => {
+    onNodesChange(changes);
+    
+    // Find the selected node
+    const selectedNodeChange = changes.find(change => 
+      change.type === 'select' && change.selected === true
+    );
+    
+    if (selectedNodeChange) {
+      const selectedNodeData = nodes.find(node => node.id === selectedNodeChange.id);
+      setSelectedNode(selectedNodeData);
+    } else {
+      // Check if any node is still selected
+      const hasSelectedNode = nodes.some(node => node.selected);
+      if (!hasSelectedNode) {
+        setSelectedNode(null);
+      }
+    }
+  }, [onNodesChange, nodes]);
 
 
 
@@ -168,18 +191,31 @@ const OverviewFlow = () => {
     onInit(instance);
   }, []);
 
+  // Handle node data updates from settings panel
+  const handleNodeUpdate = useCallback((updatedData) => {
+    if (selectedNode) {
+      setNodes((nds) =>
+        nds.map((n) =>
+          n.id === selectedNode.id
+            ? { ...n, data: { ...n.data, ...updatedData } }
+            : n
+        )
+      );
+    }
+  }, [selectedNode, setNodes]);
+
   return (
     <div className="flow-container">
       <Sidebar />
       <div 
         className="reactflow-wrapper" 
         ref={reactFlowWrapper}
-        style={{ marginLeft: "250px", height: "100vh" }}
+        style={{ marginLeft: "250px", marginRight: "300px", height: "100vh" }}
       >
         <ReactFlow
           nodes={nodes}
           edges={edges}
-          onNodesChange={onNodesChange}
+          onNodesChange={handleNodesChange}
           onEdgesChange={onEdgesChange}
           onNodesDelete={onNodesDelete}
           onEdgesDelete={onEdgesDelete}
@@ -234,6 +270,12 @@ const OverviewFlow = () => {
           onClose={() => setEdgeModalOpen(false)}
         />
       </div>
+      
+      {/* Settings Panel */}
+      <SettingsPanel 
+        nodeData={selectedNode?.data} 
+        onUpdateNode={handleNodeUpdate}
+      />
     </div>
   );
 };
