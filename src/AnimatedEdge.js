@@ -11,7 +11,6 @@ export default function AnimatedEdge({
   targetPosition,
   markerEnd,
   style,
-  data,
 }) {
   // Calculate the edge path
   const [edgePath] = getSmoothStepPath({
@@ -23,27 +22,40 @@ export default function AnimatedEdge({
     targetPosition,
   });
 
-  // Get dot color from data, default to white
-  const dotColor = data?.dotColor || '#ffffff';
-
   return (
     <g>
-      {/* Main solid gradient edge path */}
+      {/* Base path - solid muted single color */}
       <path
-        id={id}
-        style={style}
+        id={`${id}-base`}
+        style={{
+          stroke: "#d1d5db",
+          strokeWidth: (style?.strokeWidth || 4) + 2,
+          strokeOpacity: 0.6
+        }}
         className="react-flow__edge-path"
         d={edgePath}
-        markerEnd={markerEnd}
         fill="none"
       />
 
-      {/* Animated dot that flows along the path */}
-      <circle r="4" fill={dotColor} stroke="#000" strokeWidth="0.5">
-        <animateMotion dur="5s" repeatCount="indefinite">
-          <mpath href={`#${id}`} />
-        </animateMotion>
-      </circle>
+      {/* Animated gradient flow - shorter lines */}
+      <path
+        d={edgePath}
+        fill="none"
+        stroke="url(#flow-gradient)"
+        strokeWidth={style?.strokeWidth || 4}
+        strokeDasharray="12 88"
+        strokeLinecap="round"
+        opacity="0.9"
+        markerEnd={markerEnd}
+      >
+        <animate
+          attributeName="stroke-dashoffset"
+          values="100;0"
+          dur="2s"
+          repeatCount="indefinite"
+        />
+      </path>
+
     </g>
   );
 }

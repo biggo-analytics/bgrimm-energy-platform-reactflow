@@ -130,6 +130,15 @@ const OverviewFlow = () => {
                 <stop offset="0%" stopColor="#0d9488" stopOpacity={1} />
                 <stop offset="100%" stopColor="#06b6d4" stopOpacity={1} />
               </linearGradient>
+
+              {/* Flow gradient for animated short lines */}
+              <linearGradient id="flow-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#ffffff" stopOpacity={0} />
+                <stop offset="25%" stopColor="#ffffff" stopOpacity={0.8} />
+                <stop offset="50%" stopColor="#ffffff" stopOpacity={1} />
+                <stop offset="75%" stopColor="#ffffff" stopOpacity={0.8} />
+                <stop offset="100%" stopColor="#ffffff" stopOpacity={0} />
+              </linearGradient>
             </defs>
           </svg>
 
