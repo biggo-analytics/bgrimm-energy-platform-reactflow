@@ -14,6 +14,7 @@ import {
   nodes as initialNodes,
   edges as initialEdges,
 } from "./initial-elements";
+import { useEnergyData } from "./useEnergyData";
 
 import ImageNode from "./ImageNode";
 import AnimatedEdge from "./AnimatedEdge";
@@ -33,6 +34,9 @@ const OverviewFlow = () => {
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const reactFlowWrapper = useRef(null);
   const reactFlowInstance = useRef(null);
+
+  // Energy data management hook
+  const { updateSingleValue, updateValues, simulateApiUpdate, isUpdating } = useEnergyData(setNodes);
 
   const onConnect = useCallback(
     (params) => setEdges((eds) => addEdge(params, eds)),
@@ -85,8 +89,36 @@ const OverviewFlow = () => {
   return (
     <div className="flow-container">
       <Sidebar />
-      <div 
-        className="reactflow-wrapper" 
+
+      {/* Energy Update Controls - for testing/demo */}
+      <div style={{
+        position: "absolute",
+        top: "10px",
+        right: "10px",
+        zIndex: 1000,
+        background: "white",
+        padding: "10px",
+        borderRadius: "8px",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
+      }}>
+        <button
+          onClick={simulateApiUpdate}
+          disabled={isUpdating}
+          style={{
+            padding: "8px 16px",
+            backgroundColor: isUpdating ? "#ccc" : "#3b82f6",
+            color: "white",
+            border: "none",
+            borderRadius: "4px",
+            cursor: isUpdating ? "not-allowed" : "pointer"
+          }}
+        >
+          {isUpdating ? "Updating..." : "Simulate API Update"}
+        </button>
+      </div>
+
+      <div
+        className="reactflow-wrapper"
         ref={reactFlowWrapper}
         style={{ marginLeft: "250px", height: "100vh" }}
       >

@@ -1,55 +1,37 @@
 
 import { MarkerType } from "reactflow";
+import { energyData, getFormattedValue } from "./energyData";
 
-// URL รูปภาพ Placeholder (สามารถเปลี่ยนได้)
-const solarIconUrl = "https://cdn-icons-png.flaticon.com/512/3463/3463440.png";
-const batteryIconUrl =
-  "   https://cdn-icons-png.flaticon.com/512/1687/1687413.png";
-const loadIconUrl = "https://cdn-icons-png.flaticon.com/512/2801/2801682.png";
-const gridIconUrl = "https://cdn-icons-png.flaticon.com/512/4882/4882999.png";
+// Generate nodes from energy data configuration
+export const nodes = Object.values(energyData).map(nodeData => ({
+  id: nodeData.id,
+  type: "imageNode",
+  position: nodeData.position,
+  data: {
+    label: nodeData.label,
+    value: getFormattedValue(nodeData.id),
+    imageUrl: nodeData.icon,
+    // Store raw energy value for easy updates
+    energyValue: nodeData.value,
+    energyUnit: nodeData.unit
+  }
+}));
 
-export const nodes = [
-  {
-    id: "solar",
+// Function to update nodes with new energy values
+export const updateNodesWithEnergyData = () => {
+  return Object.values(energyData).map(nodeData => ({
+    id: nodeData.id,
     type: "imageNode",
-    position: { x: 0, y: 0 },
+    position: nodeData.position,
     data: {
-      label: "Solar",
-      value: "12.02 kW",
-      imageUrl: solarIconUrl,
-    },
-  },
-  {
-    id: "battery",
-    type: "imageNode",
-    position: { x: 0, y: 250 },
-    data: {
-      label: "Battery",
-      value: "55.34 kW",
-      imageUrl: batteryIconUrl,
-    },
-  },
-  {
-    id: "load",
-    type: "imageNode",
-    position: { x: 300, y: 125 },
-    data: {
-      label: "Load",
-      value: "23.02 kW",
-      imageUrl: loadIconUrl,
-    },
-  },
-  {
-    id: "grid",
-    type: "imageNode",
-    position: { x: 600, y: 250 },
-    data: {
-      label: "Grid",
-      value: "16.12 kW",
-      imageUrl: gridIconUrl,
-    },
-  },
-];
+      label: nodeData.label,
+      value: getFormattedValue(nodeData.id),
+      imageUrl: nodeData.icon,
+      energyValue: nodeData.value,
+      energyUnit: nodeData.unit
+    }
+  }));
+};
 
 export const edges = [
   {
