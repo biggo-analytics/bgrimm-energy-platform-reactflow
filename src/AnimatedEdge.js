@@ -10,8 +10,10 @@ export default function AnimatedEdge({
   sourcePosition,
   targetPosition,
   markerEnd,
+  style,
+  data,
 }) {
-  // คำนวณ path ของเส้นเชื่อม
+  // Calculate the edge path
   const [edgePath] = getSmoothStepPath({
     sourceX,
     sourceY,
@@ -21,24 +23,27 @@ export default function AnimatedEdge({
     targetPosition,
   });
 
+  // Get dot color from data, default to white
+  const dotColor = data?.dotColor || '#ffffff';
+
   return (
-    <>
-      {/* เส้นเชื่อมหลัก (สีเทา) */}
+    <g>
+      {/* Main solid gradient edge path */}
       <path
         id={id}
-        style={{ stroke: "#ddd", strokeWidth: 3 }}
+        style={style}
         className="react-flow__edge-path"
         d={edgePath}
         markerEnd={markerEnd}
+        fill="none"
       />
-      {/* วงกลมที่จะเคลื่อนที่ */}
-      <circle r="6" fill="#f81ce5">
-        {/* ส่วนที่กำหนดการเคลื่อนไหว */}
-        <animateMotion dur="4s" repeatCount="indefinite">
-          {/* อ้างอิง path ที่จะให้วิ่งตาม โดยใช้ id ของเส้นเชื่อม */}
-          <mpath xlinkHref={`#${id}`} />
+
+      {/* Animated dot that flows along the path */}
+      <circle r="4" fill={dotColor} stroke="#000" strokeWidth="0.5">
+        <animateMotion dur="5s" repeatCount="indefinite">
+          <mpath href={`#${id}`} />
         </animateMotion>
       </circle>
-    </>
+    </g>
   );
 }

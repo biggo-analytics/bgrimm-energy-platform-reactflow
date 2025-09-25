@@ -104,18 +104,31 @@ const OverviewFlow = () => {
           nodeTypes={nodeTypes}
           edgeTypes={edgeTypes}
         >
-          {/* SVG defs เดิม ไม่ต้องแก้ไข */}
+          {/* SVG gradient definitions for edges */}
           <svg>
             <defs>
-              <linearGradient id="edge-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop
-                  offset="0%"
-                  style={{ stopColor: "#ffc84d", stopOpacity: 1 }}
-                />
-                <stop
-                  offset="100%"
-                  style={{ stopColor: "#ffab00", stopOpacity: 1 }}
-                />
+              {/* Green to Blue gradient */}
+              <linearGradient id="gradient-1" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#10b981" stopOpacity={1} />
+                <stop offset="100%" stopColor="#3b82f6" stopOpacity={1} />
+              </linearGradient>
+
+              {/* Orange to Yellow gradient */}
+              <linearGradient id="gradient-2" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#f97316" stopOpacity={1} />
+                <stop offset="100%" stopColor="#eab308" stopOpacity={1} />
+              </linearGradient>
+
+              {/* Purple to Pink gradient */}
+              <linearGradient id="gradient-3" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#8b5cf6" stopOpacity={1} />
+                <stop offset="100%" stopColor="#ec4899" stopOpacity={1} />
+              </linearGradient>
+
+              {/* Teal to Cyan gradient */}
+              <linearGradient id="gradient-4" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#0d9488" stopOpacity={1} />
+                <stop offset="100%" stopColor="#06b6d4" stopOpacity={1} />
               </linearGradient>
             </defs>
           </svg>

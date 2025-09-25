@@ -1,3 +1,4 @@
+
 import { MarkerType } from "reactflow";
 
 // URL รูปภาพ Placeholder (สามารถเปลี่ยนได้)
@@ -55,21 +56,24 @@ export const edges = [
     id: "solar-to-load",
     source: "solar",
     target: "load",
-    //markerEnd: { type: MarkerType.ArrowClosed },
     type: "animated",
+    style: { stroke: 'url(#gradient-1)', strokeWidth: 4 },
+    data: { dotColor: '#ffffff' }
   },
   {
-    id: "solar-to-battery",
-    source: "solar",
-    target: "battery",
-    //markerEnd: { type: MarkerType.ArrowClosed },
+    id: "battery-to-load",
+    source: "battery",
+    target: "load",
     type: "animated",
+    style: { stroke: 'url(#gradient-2)', strokeWidth: 4 },
+    data: { dotColor: '#ffffff' }
   },
   {
     id: "grid-to-load",
     source: "grid",
     target: "load",
-    //markerEnd: { type: MarkerType.ArrowClosed },
     type: "animated",
+    style: { stroke: 'url(#gradient-3)', strokeWidth: 4 },
+    data: { dotColor: '#ffffff' }
   },
 ];
