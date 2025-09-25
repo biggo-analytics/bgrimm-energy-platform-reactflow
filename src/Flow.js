@@ -131,14 +131,59 @@ const OverviewFlow = () => {
                 <stop offset="100%" stopColor="#06b6d4" stopOpacity={1} />
               </linearGradient>
 
-              {/* Flow gradient for animated short lines */}
-              <linearGradient id="flow-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#ffffff" stopOpacity={0} />
-                <stop offset="25%" stopColor="#ffffff" stopOpacity={0.8} />
+              {/* Flow gradients for each edge with glow effects */}
+
+              {/* Solar flow - bright orange glow */}
+              <linearGradient id="flow-solar" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#f97316" stopOpacity={0} />
+                <stop offset="30%" stopColor="#fb923c" stopOpacity={0.9} />
                 <stop offset="50%" stopColor="#ffffff" stopOpacity={1} />
-                <stop offset="75%" stopColor="#ffffff" stopOpacity={0.8} />
-                <stop offset="100%" stopColor="#ffffff" stopOpacity={0} />
+                <stop offset="70%" stopColor="#fb923c" stopOpacity={0.9} />
+                <stop offset="100%" stopColor="#f97316" stopOpacity={0} />
               </linearGradient>
+
+              {/* Battery flow - solid green throughout */}
+              <linearGradient id="flow-battery" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#10b981" stopOpacity={0.7} />
+                <stop offset="25%" stopColor="#22c55e" stopOpacity={0.9} />
+                <stop offset="50%" stopColor="#34d399" stopOpacity={1} />
+                <stop offset="75%" stopColor="#22c55e" stopOpacity={0.9} />
+                <stop offset="100%" stopColor="#10b981" stopOpacity={0.7} />
+              </linearGradient>
+
+              {/* Grid flow - gray glow */}
+              <linearGradient id="flow-grid" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#6b7280" stopOpacity={0} />
+                <stop offset="25%" stopColor="#9ca3af" stopOpacity={0.7} />
+                <stop offset="50%" stopColor="#ffffff" stopOpacity={1} />
+                <stop offset="75%" stopColor="#9ca3af" stopOpacity={0.7} />
+                <stop offset="100%" stopColor="#6b7280" stopOpacity={0} />
+              </linearGradient>
+
+              {/* Glow filters for each edge */}
+              <filter id="glow-solar" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                <feMerge>
+                  <feMergeNode in="coloredBlur"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+
+              <filter id="glow-battery" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
+                <feMerge>
+                  <feMergeNode in="coloredBlur"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+
+              <filter id="glow-grid" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+                <feMerge>
+                  <feMergeNode in="coloredBlur"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
             </defs>
           </svg>
 

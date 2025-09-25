@@ -58,7 +58,12 @@ export const edges = [
     target: "load",
     type: "animated",
     style: { stroke: 'url(#gradient-1)', strokeWidth: 4 },
-    data: { dotColor: '#ffffff' }
+    data: {
+      flowGradient: 'flow-solar',
+      glowFilter: 'glow-solar',
+      dashArray: '25 75',
+      duration: '2.5s'
+    }
   },
   {
     id: "battery-to-load",
@@ -66,7 +71,12 @@ export const edges = [
     target: "load",
     type: "animated",
     style: { stroke: 'url(#gradient-2)', strokeWidth: 4 },
-    data: { dotColor: '#ffffff' }
+    data: {
+      flowGradient: 'flow-battery',
+      glowFilter: 'glow-battery',
+      dashArray: '20 80',
+      duration: '1.8s'
+    }
   },
   {
     id: "grid-to-load",
@@ -74,6 +84,11 @@ export const edges = [
     target: "load",
     type: "animated",
     style: { stroke: 'url(#gradient-3)', strokeWidth: 4 },
-    data: { dotColor: '#ffffff' }
+    data: {
+      flowGradient: 'flow-grid',
+      glowFilter: 'glow-grid',
+      dashArray: '30 70',
+      duration: '3s'
+    }
   },
 ];

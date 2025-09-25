@@ -11,6 +11,7 @@ export default function AnimatedEdge({
   targetPosition,
   markerEnd,
   style,
+  data,
 }) {
   // Calculate the edge path
   const [edgePath] = getSmoothStepPath({
@@ -21,6 +22,12 @@ export default function AnimatedEdge({
     targetY,
     targetPosition,
   });
+
+  // Get flow properties from data with defaults
+  const flowGradient = data?.flowGradient || 'flow-solar';
+  const glowFilter = data?.glowFilter || 'glow-solar';
+  const dashArray = data?.dashArray || '12 88';
+  const duration = data?.duration || '2s';
 
   return (
     <g>
@@ -37,21 +44,22 @@ export default function AnimatedEdge({
         fill="none"
       />
 
-      {/* Animated gradient flow - shorter lines */}
+      {/* Animated gradient flow with unique glow for each edge */}
       <path
         d={edgePath}
         fill="none"
-        stroke="url(#flow-gradient)"
+        stroke={`url(#${flowGradient})`}
         strokeWidth={style?.strokeWidth || 4}
-        strokeDasharray="12 88"
+        strokeDasharray={dashArray}
         strokeLinecap="round"
-        opacity="0.9"
+        opacity="0.95"
+        filter={`url(#${glowFilter})`}
         markerEnd={markerEnd}
       >
         <animate
           attributeName="stroke-dashoffset"
           values="100;0"
-          dur="2s"
+          dur={duration}
           repeatCount="indefinite"
         />
       </path>
