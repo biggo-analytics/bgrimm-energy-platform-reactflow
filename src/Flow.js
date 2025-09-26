@@ -174,13 +174,13 @@ const OverviewFlow = () => {
                 <stop offset="100%" stopColor="#f97316" stopOpacity={0} />
               </linearGradient>
 
-              {/* Battery flow - solid green throughout */}
+              {/* Battery flow - solid purple throughout */}
               <linearGradient id="flow-battery" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#10b981" stopOpacity={0.7} />
-                <stop offset="25%" stopColor="#22c55e" stopOpacity={0.9} />
-                <stop offset="50%" stopColor="#34d399" stopOpacity={1} />
-                <stop offset="75%" stopColor="#22c55e" stopOpacity={0.9} />
-                <stop offset="100%" stopColor="#10b981" stopOpacity={0.7} />
+                <stop offset="0%" stopColor="#8b5cf6" stopOpacity={0.7} />
+                <stop offset="25%" stopColor="#a78bfa" stopOpacity={0.9} />
+                <stop offset="50%" stopColor="#c4b5fd" stopOpacity={1} />
+                <stop offset="75%" stopColor="#a78bfa" stopOpacity={0.9} />
+                <stop offset="100%" stopColor="#8b5cf6" stopOpacity={0.7} />
               </linearGradient>
 
               {/* Grid flow - gray glow */}
