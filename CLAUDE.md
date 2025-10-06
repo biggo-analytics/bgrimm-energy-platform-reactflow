@@ -4,73 +4,127 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a React Flow proof-of-concept application for an energy system aggregator business. It demonstrates an interactive diagram showing energy flow between components like Solar, Battery, Load, and Grid systems with drag-and-drop functionality.
+React Flow-based proof-of-concept for visualizing energy system aggregator data with real-time updates and animated flow representations. The application demonstrates energy flow between Solar, Battery, Load, and Grid components with drag-and-drop functionality and API integration support.
 
 ## Development Commands
 
 ```bash
-# Start development server
+# Start development server (port 3000 by default)
 npm start
 
 # Build for production
 npm run build
 
-# Run tests
+# Run tests with Jest
 npm test
-
-# Extract configuration (if needed)
-npm run eject
 ```
 
 ## Architecture
 
-### Core Components
+### Centralized Energy Data Management
 
-- **App.js**: Main application entry point that renders the Flow component
-- **Flow.js**: Primary ReactFlow container with drag-and-drop functionality, manages nodes and edges state
-- **Sidebar.js**: Draggable component palette containing energy system components (Solar, Battery, Load, Grid)
-- **ImageNode.js**: Custom ReactFlow node type that displays energy components with images, values, and labels
-- **AnimatedEdge.js**: Custom edge type for animated connections between components
-- **initial-elements.js**: Default nodes and edges configuration for the energy flow diagram
+The application uses a centralized data management pattern that separates data from presentation:
 
-### Key Features
+1. **[energyData.js](src/energyData.js)** - Single source of truth for all energy component configurations (values, labels, positions, icons)
+2. **[useEnergyData.js](src/useEnergyData.js)** - React hook that manages state updates and provides API integration methods
+3. **[initial-elements.js](src/initial-elements.js)** - Generates ReactFlow nodes and edges from centralized energy data
 
-1. **Drag & Drop System**: Components can be dragged from the sidebar and dropped onto the flow canvas
-2. **Custom Node Types**: Energy components are rendered as image nodes with power values
-3. **Animated Edges**: Connections between components use animated edges to show energy flow
-4. **ReactFlow Integration**: Uses ReactFlow v11 with MiniMap, Controls, and Background components
+This architecture enables:
 
-### File Structure
+- Easy API integration without touching UI components
+- Centralized value updates that automatically propagate to all nodes
+- Separation of concerns between data and presentation layers
 
-```
-src/
-├── App.js              # Main app component
-├── Flow.js             # ReactFlow wrapper with drag-drop logic
-├── Sidebar.js          # Component palette with draggable items
-├── ImageNode.js        # Custom node component
-├── ImageNode.css       # Node styling
-├── AnimatedEdge.js     # Custom edge component
-├── initial-elements.js # Initial nodes and edges data
-├── Sidebar.css         # Sidebar styling
-├── styles.css          # Global styles
-└── index.js            # React entry point
+### Key Data Flow
+
+```text
+API Response → useEnergyData hook → energyData.js (updates) →
+initial-elements.js (regenerates nodes) → setNodes() → UI updates
 ```
 
-### Data Structure
+When integrating with real APIs:
 
-- **Nodes**: Energy components with `type: "imageNode"`, position, and data containing label, value, and imageUrl
-- **Edges**: Connections between nodes with animated type and source/target references
-- **Component Types**: Solar, Battery, Load, Grid - each with specific icons and power values
+1. Use `handleApiUpdate()` from `useEnergyData` hook with API response format: `[{id: 'solar', value: 22.5}, ...]`
+2. Energy data automatically updates in [energyData.js](src/energyData.js)
+3. Nodes regenerate via `updateNodesWithEnergyData()` in [initial-elements.js](src/initial-elements.js)
+4. ReactFlow re-renders with new values
 
-### Styling
+### Custom ReactFlow Components
 
-- Uses CSS modules for component-specific styling
-- ReactFlow default styles imported from 'reactflow/dist/style.css'
-- Custom gradient definitions for animated edges
-- Sidebar positioned with fixed width (250px) and full height
+- **[ImageNode.js](src/ImageNode.js)** - Custom node type displaying energy component icon, label, and real-time power value
+- **[AnimatedEdge.js](src/AnimatedEdge.js)** - Custom edge with configurable animated gradients and glow effects
+  - Each edge has unique gradient (flow-solar, flow-battery, flow-grid) and glow filter
+  - Animation properties (dashArray, duration) are configurable per edge via `data` prop
+  - Base path + animated overlay pattern for visual depth
 
-### State Management
+### SVG Gradient System
 
-- Uses ReactFlow hooks: `useNodesState` and `useEdgesState` for managing flow state
-- Local component state only - no external state management library
-- Drag-and-drop data transfer using browser DataTransfer API
+All gradient and glow filter definitions are in [Flow.js](src/Flow.js) within the ReactFlow `<svg><defs>` section:
+
+- Static gradients (gradient-1 through gradient-4) for base edge colors
+- Flow gradients (flow-solar, flow-battery, flow-grid) for animated overlays
+- Glow filters (glow-solar, glow-battery, glow-grid) for edge effects
+
+To add new edge types or modify colors, update both the gradient definitions in [Flow.js](src/Flow.js) and edge data in [initial-elements.js](src/initial-elements.js).
+
+### Component Structure
+
+```text
+Flow.js (ReactFlowProvider wrapper)
+├── Sidebar.js (draggable component palette)
+└── ReactFlow
+    ├── Custom nodes (ImageNode)
+    ├── Custom edges (AnimatedEdge)
+    ├── SVG gradient/filter definitions
+    └── MiniMap, Controls, Background
+```
+
+## API Integration
+
+See [API_INTEGRATION_GUIDE.md](API_INTEGRATION_GUIDE.md) for comprehensive integration details.
+
+### Quick Integration Pattern
+
+```javascript
+import { useEnergyData } from './src/useEnergyData';
+
+const { handleApiUpdate } = useEnergyData(setNodes);
+
+// REST API polling
+const fetchData = async () => {
+  const response = await fetch('/api/energy-data');
+  const data = await response.json();
+  await handleApiUpdate(data); // Format: [{id: 'solar', value: 22.5}, ...]
+};
+
+// WebSocket real-time updates
+const ws = new WebSocket('ws://endpoint');
+ws.onmessage = (event) => {
+  const data = JSON.parse(event.data);
+  handleApiUpdate(data);
+};
+```
+
+## Customization
+
+### Adding New Energy Components
+
+1. Add node configuration to [energyData.js](src/energyData.js)
+2. Add edge connections to [initial-elements.js](src/initial-elements.js)
+3. (Optional) Define custom gradient/glow in [Flow.js](src/Flow.js)
+
+### Modifying Flow Animations
+
+Edge animation properties are in [initial-elements.js](src/initial-elements.js) `edges` array:
+
+- `dashArray` - Controls flow segment length (e.g., '25 75' = 25% visible, 75% gap)
+- `duration` - Animation speed (e.g., '2.5s')
+- `flowGradient` - References gradient ID from Flow.js
+- `glowFilter` - References filter ID from Flow.js
+
+## Tech Stack
+
+- React 18.1.0
+- React Flow 11.10.1 (node-based diagram library)
+- react-scripts 5.0.1 (Create React App)
+- SVG animations for edge effects

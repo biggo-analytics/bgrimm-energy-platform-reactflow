@@ -13,7 +13,10 @@ export const nodes = Object.values(energyData).map(nodeData => ({
     imageUrl: nodeData.icon,
     // Store raw energy value for easy updates
     energyValue: nodeData.value,
-    energyUnit: nodeData.unit
+    energyUnit: nodeData.unit,
+    // Store Node-RED config for configuration panel
+    nodeRedId: nodeData.nodeRedId,
+    modbusConfig: nodeData.modbusConfig
   }
 }));
 
@@ -28,7 +31,9 @@ export const updateNodesWithEnergyData = () => {
       value: getFormattedValue(nodeData.id),
       imageUrl: nodeData.icon,
       energyValue: nodeData.value,
-      energyUnit: nodeData.unit
+      energyUnit: nodeData.unit,
+      nodeRedId: nodeData.nodeRedId,
+      modbusConfig: nodeData.modbusConfig
     }
   }));
 };

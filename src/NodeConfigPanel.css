@@ -1,0 +1,280 @@
+.node-config-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.node-config-panel {
+  background: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 650px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.config-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 28px;
+  border-bottom: none;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 12px 12px 0 0;
+}
+
+.config-header h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: white;
+  cursor: pointer;
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.close-btn:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.config-section {
+  padding: 28px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.config-section h3 {
+  margin: 0 0 24px 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1f2937;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #667eea;
+}
+
+.form-group {
+  margin-bottom: 24px;
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.9rem;
+  padding-top: 11px;
+  text-align: left;
+  line-height: 1.4;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group select {
+  width: 100%;
+  padding: 11px 14px;
+  border: 2px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  transition: all 0.2s ease;
+  background-color: #ffffff;
+}
+
+.form-group input[type="text"]:hover,
+.form-group input[type="number"]:hover,
+.form-group select:hover {
+  border-color: #d1d5db;
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="number"]:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-group small {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 20px;
+  margin-top: -18px;
+  color: #6b7280;
+  font-size: 0.8rem;
+  font-style: italic;
+}
+
+.form-group small::before {
+  content: '';
+  grid-column: 1;
+}
+
+.checkbox-group {
+  margin-bottom: 24px;
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.checkbox-group > label:first-child {
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.9rem;
+  padding-top: 3px;
+  text-align: left;
+}
+
+.checkbox-group .checkbox-item {
+  display: flex;
+  align-items: center;
+}
+
+.checkbox-group input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin-right: 10px;
+  cursor: pointer;
+  accent-color: #667eea;
+}
+
+.checkbox-group .checkbox-label {
+  font-weight: 500;
+  color: #4b5563;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.config-info {
+  padding: 28px;
+  background: linear-gradient(to bottom, #f9fafb, #f3f4f6);
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.config-info h4 {
+  margin: 0 0 16px 0;
+  color: #1f2937;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.config-info ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.config-info li {
+  margin-bottom: 10px;
+  color: #4b5563;
+  font-size: 0.9rem;
+  padding: 10px 14px;
+  background: white;
+  border-radius: 4px;
+  border-left: 3px solid #667eea;
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 20px;
+  align-items: center;
+}
+
+.config-info li strong {
+  color: #1f2937;
+  font-weight: 600;
+  text-align: left;
+}
+
+.config-info li span {
+  text-align: left;
+  color: #4b5563;
+}
+
+.config-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 24px 28px;
+  background-color: #f9fafb;
+  border-radius: 0 0 12px 12px;
+}
+
+.btn-cancel,
+.btn-save {
+  padding: 12px 28px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.btn-cancel {
+  background-color: #ffffff;
+  color: #374151;
+  border: 2px solid #e5e7eb;
+}
+
+.btn-cancel:hover {
+  background-color: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.btn-save {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+.btn-save:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+}
+
+/* Scrollbar styling */
+.node-config-panel::-webkit-scrollbar {
+  width: 8px;
+}
+
+.node-config-panel::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.node-config-panel::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.node-config-panel::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}

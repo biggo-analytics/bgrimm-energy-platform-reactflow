@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import ReactFlow, {
   addEdge,
   MiniMap,
@@ -15,10 +15,14 @@ import {
   edges as initialEdges,
 } from "./initial-elements";
 import { useEnergyData } from "./useEnergyData";
+import { energyData, updateEnergyValue } from "./energyData";
+import { updateNodesWithEnergyData } from "./initial-elements";
+import { exportToNodeRed, downloadNodeRedFlows } from "./exportToNodeRed";
 
 import ImageNode from "./ImageNode";
 import AnimatedEdge from "./AnimatedEdge";
 import Sidebar from "./Sidebar";
+import NodeConfigPanel from "./NodeConfigPanel";
 
 const edgeTypes = {
   animated: AnimatedEdge,
@@ -34,9 +38,56 @@ const OverviewFlow = () => {
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const reactFlowWrapper = useRef(null);
   const reactFlowInstance = useRef(null);
+  const [selectedNode, setSelectedNode] = useState(null);
+  const [showConfigPanel, setShowConfigPanel] = useState(false);
 
   // Energy data management hook
   const { updateSingleValue, updateValues, simulateApiUpdate, isUpdating } = useEnergyData(setNodes);
+
+  // Handle node configuration click
+  const handleConfigClick = useCallback((nodeId, data) => {
+    const node = nodes.find(n => n.id === nodeId);
+    if (node) {
+      setSelectedNode(node);
+      setShowConfigPanel(true);
+    }
+  }, [nodes]);
+
+  // Add config click handler to nodes
+  React.useEffect(() => {
+    setNodes(nds => nds.map(node => ({
+      ...node,
+      data: {
+        ...node.data,
+        onConfigClick: handleConfigClick
+      }
+    })));
+  }, [handleConfigClick, setNodes]);
+
+  const handleSaveConfig = useCallback((updatedConfig) => {
+    if (selectedNode) {
+      // Update energyData
+      const energyKey = selectedNode.id; // solar, battery, load, grid
+      if (energyData[energyKey]) {
+        energyData[energyKey].label = updatedConfig.label;
+        energyData[energyKey].modbusConfig = {
+          ...energyData[energyKey].modbusConfig,
+          address: updatedConfig.address,
+          quantity: updatedConfig.quantity,
+          rate: updatedConfig.rate,
+          scaleFactor: updatedConfig.scaleFactor,
+          dataType: updatedConfig.dataType,
+          server: updatedConfig.server,
+          isSigned: updatedConfig.isSigned
+        };
+      }
+
+      // Update nodes
+      setNodes(updateNodesWithEnergyData());
+      setShowConfigPanel(false);
+      setSelectedNode(null);
+    }
+  }, [selectedNode, setNodes]);
 
   const onConnect = useCallback(
     (params) => setEdges((eds) => addEdge(params, eds)),
@@ -86,34 +137,46 @@ const OverviewFlow = () => {
     onInit(instance);
   }, []);
 
+  const handleExportToNodeRed = useCallback(() => {
+    const flows = exportToNodeRed(nodes, edges);
+    downloadNodeRedFlows(flows, 'flows.json');
+  }, [nodes, edges]);
+
   return (
     <div className="flow-container">
       <Sidebar />
 
-      {/* Energy Update Controls - for testing/demo */}
+      {/* Export Button */}
       <div style={{
         position: "absolute",
         top: "10px",
         right: "10px",
-        zIndex: 1000,
-        background: "white",
-        padding: "10px",
-        borderRadius: "8px",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
+        zIndex: 1000
       }}>
         <button
-          onClick={simulateApiUpdate}
-          disabled={isUpdating}
+          onClick={handleExportToNodeRed}
           style={{
-            padding: "8px 16px",
-            backgroundColor: isUpdating ? "#ccc" : "#3b82f6",
+            padding: "10px 20px",
+            background: "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
             color: "white",
             border: "none",
-            borderRadius: "4px",
-            cursor: isUpdating ? "not-allowed" : "pointer"
+            borderRadius: "6px",
+            cursor: "pointer",
+            fontWeight: "600",
+            fontSize: "0.95rem",
+            transition: "all 0.2s",
+            boxShadow: "0 2px 8px rgba(59, 130, 246, 0.3)"
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.transform = "translateY(-2px)";
+            e.currentTarget.style.boxShadow = "0 4px 12px rgba(59, 130, 246, 0.4)";
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.transform = "translateY(0)";
+            e.currentTarget.style.boxShadow = "0 2px 8px rgba(59, 130, 246, 0.3)";
           }}
         >
-          {isUpdating ? "Updating..." : "Simulate API Update"}
+          Export to Node-RED
         </button>
       </div>
 
@@ -224,6 +287,18 @@ const OverviewFlow = () => {
           <Background color="#aaa" gap={16} />
         </ReactFlow>
       </div>
+
+      {/* Node Configuration Panel */}
+      {showConfigPanel && (
+        <NodeConfigPanel
+          node={selectedNode}
+          onClose={() => {
+            setShowConfigPanel(false);
+            setSelectedNode(null);
+          }}
+          onSave={handleSaveConfig}
+        />
+      )}
     </div>
   );
 };
